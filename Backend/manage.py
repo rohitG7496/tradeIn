@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+# pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -9,6 +10,7 @@ def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Backend.settings')
     try:
+        # pyrefly: ignore [missing-import]
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(

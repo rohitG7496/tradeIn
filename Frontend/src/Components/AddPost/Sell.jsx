@@ -196,7 +196,7 @@ class Sell extends Component {
 		const colors = getColors();
 		if (this.props.success) {
 			this.props.history.push(`/buy/${this.props.postId}`);
-			return;
+			return null;
 		}
 		// console.log(this.state);
 		return (

@@ -18,6 +18,23 @@ import os
 import json
 from django.utils import timezone
 import cloudinary.uploader
+from PIL import Image
+import io
+
+def compress_image(image_file):
+    if image_file == "undefined" or image_file == "null":
+        return image_file
+    try:
+        img = Image.open(image_file)
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        img.thumbnail((1920, 1920), Image.LANCZOS)
+        output = io.BytesIO()
+        img.save(output, format='JPEG', quality=85)
+        output.seek(0)
+        return output
+    except Exception as e:
+        return image_file
 
 def timesince_calulate(date,time):
     timesince=""
@@ -129,16 +146,20 @@ class PostCreateView(APIView):
         post_serializer=PostSerializer(data=request.data)
         imagearray =[]
         if request.data['img1']!="undefined" and  request.data['img1']!="null":
-            upload_data = cloudinary.uploader.upload(request.data['img1'],folder="post")
+            compressed_img1 = compress_image(request.data['img1'])
+            upload_data = cloudinary.uploader.upload(compressed_img1,folder="post")
             imagearray.append(upload_data['public_id'])
         if request.data['img2']!="undefined" and  request.data['img2']!="null":
-            upload_data = cloudinary.uploader.upload(request.data['img2'],folder="post")
+            compressed_img2 = compress_image(request.data['img2'])
+            upload_data = cloudinary.uploader.upload(compressed_img2,folder="post")
             imagearray.append(upload_data['public_id'])
         if request.data['img3']!="undefined" and  request.data['img3']!="null":
-            upload_data = cloudinary.uploader.upload(request.data['img3'],folder="post")
+            compressed_img3 = compress_image(request.data['img3'])
+            upload_data = cloudinary.uploader.upload(compressed_img3,folder="post")
             imagearray.append(upload_data['public_id'])
         if request.data['img4']!="undefined" and request.data['img4']!="null":
-            upload_data = cloudinary.uploader.upload(request.data['img4'],folder="post")   
+            compressed_img4 = compress_image(request.data['img4'])
+            upload_data = cloudinary.uploader.upload(compressed_img4,folder="post")   
             imagearray.append(upload_data['public_id']) 
         try:    
             user=Profile.objects.get(user_id=request.data['user'])
@@ -199,16 +220,20 @@ class PostEditView(APIView):
             post_update_serializer.save()
             imagearray = []
             if 'img1' in request.data and request.data['img1'] != "undefined" and request.data['img1'] != "null":
-                upload_data = cloudinary.uploader.upload(request.data['img1'], folder="post")
+                compressed_img1 = compress_image(request.data['img1'])
+                upload_data = cloudinary.uploader.upload(compressed_img1, folder="post")
                 imagearray.append(upload_data['public_id'])
             if 'img2' in request.data and request.data['img2'] != "undefined" and request.data['img2'] != "null":
-                upload_data = cloudinary.uploader.upload(request.data['img2'], folder="post")
+                compressed_img2 = compress_image(request.data['img2'])
+                upload_data = cloudinary.uploader.upload(compressed_img2, folder="post")
                 imagearray.append(upload_data['public_id'])
             if 'img3' in request.data and request.data['img3'] != "undefined" and request.data['img3'] != "null":
-                upload_data = cloudinary.uploader.upload(request.data['img3'], folder="post")
+                compressed_img3 = compress_image(request.data['img3'])
+                upload_data = cloudinary.uploader.upload(compressed_img3, folder="post")
                 imagearray.append(upload_data['public_id'])
             if 'img4' in request.data and request.data['img4'] != "undefined" and request.data['img4'] != "null":
-                upload_data = cloudinary.uploader.upload(request.data['img4'], folder="post")
+                compressed_img4 = compress_image(request.data['img4'])
+                upload_data = cloudinary.uploader.upload(compressed_img4, folder="post")
                 imagearray.append(upload_data['public_id'])
 
             for image in imagearray:

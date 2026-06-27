@@ -200,7 +200,7 @@ class Exchange extends Component {
 		const genres = getBookGenres();
 		if (this.props.success) {
 			this.props.history.push(`/exchange/${this.props.postId}`);
-			return;
+			return null;
 		}
 
 		return (
