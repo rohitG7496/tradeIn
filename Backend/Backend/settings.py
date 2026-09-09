@@ -5,8 +5,32 @@ import cloudinary
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import json
+import boto3
 from dotenv import load_dotenv
 load_dotenv(os.path.join(BASE_DIR, '.env'))
+
+def load_aws_secrets():
+    secret_name = os.environ.get("SECRET_NAME", "trade/in/prod")
+    region_name = os.environ.get("AWS_REGION", "ap-south-1")
+
+    # If running locally without AWS credentials, skip fetching
+    if not os.environ.get("AWS_ACCESS_KEY_ID") and not os.environ.get("AWS_ECS_ENV"):
+        return
+
+    try:
+        session = boto3.session.Session()
+        client = session.client(service_name='secretsmanager', region_name=region_name)
+        response = client.get_secret_value(SecretId=secret_name)
+        
+        secrets = json.loads(response['SecretString'])
+        for key, value in secrets.items():
+            os.environ[key] = str(value)
+            
+    except Exception as e:
+        print(f"Warning: Failed to load secrets from AWS: {e}")
+
+load_aws_secrets()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
