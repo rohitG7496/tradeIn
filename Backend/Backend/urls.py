@@ -20,8 +20,12 @@ from django.http import JsonResponse
 def root_view(request):
     return JsonResponse({"message": "TradeIn Backend API is running. Use /api/ for endpoints."})
 
+def ping_view(request):
+    return JsonResponse({"message": "pong"})
+
 urlpatterns = [
     path('', root_view),
+    path('ping', ping_view),
     path('admin/', admin.site.urls),
     path('api/',include('Profile.urls',namespace="profile")),
     path('api/post/',include('Posts.urls',namespace="post")),
