@@ -1,0 +1,22 @@
+name: Trigger DevSecOps Pipeline
+
+on:
+    pull_request:
+        types: [closed]
+        branches:
+            - main
+
+jobs:
+    trigger:
+        # This job will only run if the pull request was actually merged, not just closed without merging
+        if: github.event.pull_request.merged == true
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger DevSecOps Workflow
+              uses: peter-evans/repository-dispatch@v3
+              with:
+                  # You will need to create a Personal Access Token (PAT) with repo access
+                  # and add it as a secret in the tradein repository settings
+                  token: ${{ secrets.PAT_TOKEN }}
+                  repository: rohitG7496/cloud-native-devsecops-platform # Replace with your actual org/repo name
+                  event-type: tradein-pr-merged
